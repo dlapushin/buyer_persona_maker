@@ -2,3 +2,4 @@ translate
 pickle5
 stqdm
 pivottablejs
+plotly
