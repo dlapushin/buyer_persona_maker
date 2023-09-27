@@ -1,6 +1,7 @@
 translate
 pickle5
 stqdm
+components.html
 IPython
 pivottablejs
 plotly
