@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit.components.v1 as components
 from pivottablejs import pivot_ui
+from streamlit_option_menu import option_menu
 from datetime import datetime   
 
 with open('title_classifier_serial', 'rb') as f:
@@ -94,8 +95,8 @@ def contacts_import(approach):
                 with col2_fldid:                
 
                     date_range_filter = st.slider('Select date range', 
-                                         value = (timestamp_str_to_datetime(min(buyer_persona.df['CreatedDate'])),
-                                            timestamp_str_to_datetime(max(buyer_persona.df['CreatedDate']))),
+                                         value = (timestamp_str_to_datetime(min(buyer_persona.df[option_contact_createdate].dropna())),
+                                            timestamp_str_to_datetime(max(buyer_persona.df[option_contact_createdate].dropna()))),
                                          key='date_slide'
                                          ) 
 
@@ -237,7 +238,6 @@ def contacts_import(approach):
             st.session_state['buyer_persona'] = buyer_persona
 
             match_choice = st.radio("Choose RES-FUN matching approach using above table",
-                #key="visibility",
                 options=['Top RES x Top FUN', 
                          'Top RES x All FUN', 
                          'All RES x Top FUN'],
@@ -264,13 +264,13 @@ def contacts_import(approach):
             elif(match_choice == 'Top RES x All FUN'):
 
                 pivot_df = buyer_persona.df[filter_res & filter_create_date]
-                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by='CreatedDate', ascending=False)
+                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
                 pivot_df_agg.reset_index(inplace=True)
 
             elif(match_choice == 'All RES x Top FUN'):
 
                 pivot_df = buyer_persona.df[filter_fun & filter_create_date]
-                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by='CreatedDate', ascending=False)
+                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
                 pivot_df_agg.reset_index(inplace=True)
 
             if approach == 'Simple approach':
@@ -286,7 +286,11 @@ def contacts_import(approach):
                         colOrder= "value_z_to_a")
 
             with open(t.src) as t:
-                components.html(t.read(), width=1200, height=1200, scrolling=True)
+                
+                try:
+                    components.html(t.read(), width=1200, height=1200, scrolling=True)
+                except:
+                    st.write('Dataset aggregation too granular. Try reducing value for N')
 
 
         if uploaded_file:
