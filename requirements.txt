@@ -5,4 +5,4 @@ extra_streamlit_components~=0.1.3
 IPython
 pivottablejs
 plotly
-sklearn
+scikit-learn
