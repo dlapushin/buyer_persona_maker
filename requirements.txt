@@ -1,7 +1,7 @@
 translate
 pickle5
 stqdm
+IPython
 pivottablejs
 plotly
-IPython
 sklearn
