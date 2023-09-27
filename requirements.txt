@@ -3,3 +3,4 @@ pickle5
 stqdm
 pivottablejs
 plotly
+IPython
