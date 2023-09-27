@@ -4,7 +4,6 @@ from stqdm import stqdm
 import pickle5 as pickle
 import plotly.express as px
 import plotly.graph_objects as go
-from st_aggrid import AgGrid
 import streamlit.components.v1 as components
 from pivottablejs import pivot_ui
 from streamlit_option_menu import option_menu
