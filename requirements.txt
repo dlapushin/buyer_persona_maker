@@ -4,3 +4,4 @@ stqdm
 pivottablejs
 plotly
 IPython
+sklearn
