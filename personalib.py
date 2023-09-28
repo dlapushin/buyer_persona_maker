@@ -10,7 +10,6 @@ import plotly.graph_objects as go
 import string
 from stqdm import stqdm
 stqdm.pandas()
-import translate
 import string
 import re
 
@@ -173,15 +172,24 @@ class Buyer_Persona:
 
     ## Calls the sorted_pos_token function and transforms the sorted RES_flat and FUN_flat tokens into lists.
     ## Makes POS token lookups more efficient
-    def pos_sorter(self):
+    def pos_sorter(self, **kwargs):
         print('Sorting RES and FUN values')
         self.df_res = self.sorted_pos_token('RES_flat')[['RES_flat','count']]
         self.list_res = list(self.df_res['RES_flat'])
-        self.list_res.remove('')
+        try:
+            self.list_res.remove('')
+        except:
+            pass
+
 
         self.df_fun = self.sorted_pos_token('FUN_flat')[['FUN_flat','count']]                           
         self.list_fun = list(self.df_fun['FUN_flat'])
-        self.list_fun.remove('')
+        
+        try:
+            self.list_fun.remove('')
+        except:
+            pass
+
 
     ## Futher reduces the POS list lookup set to only the number of combinations given by "n" (e.g 20x20)        
     def top_pos_sorter(self, n):
