@@ -93,11 +93,14 @@ def contacts_import(approach):
 
                 with col2_fldid:                
 
-                    date_range_filter = st.slider('Select date range', 
+                    try:
+                        date_range_filter = st.slider('Select date range', 
                                          value = (timestamp_str_to_datetime(min(buyer_persona.df[option_contact_createdate].dropna())),
                                             timestamp_str_to_datetime(max(buyer_persona.df[option_contact_createdate].dropna()))),
                                          key='date_slide'
                                          ) 
+                    except:
+                        st.stop()
 
                     ## NEED TO MEMOIZE the original DF and make filtered copies
                     buyer_persona.df = buyer_persona.df
@@ -108,12 +111,11 @@ def contacts_import(approach):
                 if date_range_filter:
                     st.session_state.date_range = date_range_filter
 
+                if 'clicked' not in st.session_state:
+                    st.session_state.clicked = False
 
                 def click_button():
                     st.session_state.clicked = True
-
-                if 'clicked' not in st.session_state:
-                    st.session_state.clicked = False
 
                 st.button("Process data", 
                             type="primary", 
@@ -197,8 +199,6 @@ def contacts_import(approach):
 
             if res_fun_topN:
                 st.session_state.res_fun_topN = int(res_fun_topN)
-
-            
 
             st.write('File loaded, data being processed.')
            
