@@ -69,6 +69,7 @@ def contacts_import(approach):
             st.write(
                 """
                 Upload a file with **Contact ID, Contact Job Title, Contact CreatedDate** at a minimum.
+                **No personal information (PII) is required**.
                 """
             )
 
@@ -136,6 +137,7 @@ def contacts_import(approach):
                 """
                 PLUS: **Opportunity details (e.g. Opportunity Amount, CreatedDate, CloseDate, IsClosed, IsWon, 
                 and GTM segment details**
+                **No personal information (PII) is required**.
                 """
             )
 
