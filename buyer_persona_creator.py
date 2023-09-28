@@ -18,13 +18,12 @@ st.set_page_config(layout="wide")
 
 def intro(approach):
 
-    st.write("# A Buyer Persona Toolkit for Sales and Marketing")
-
+    st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
     st.sidebar.success("Select approach above.")
 
     st.markdown(
         """
-        This application streamlines the creation of Marketing and Sales 
+        Helps streamline the creation of Sales and Marketing
         Buyer Persona in a fully data-driven way.
 
         **👈 Select an approach from the dropdown on the left** to begin.
@@ -53,7 +52,7 @@ def contacts_import(approach):
         return ts_date
 
     with st.container():
-        
+
         global buyer_persona
         import datetime
 
@@ -65,7 +64,8 @@ def contacts_import(approach):
             return buyer_persona
 
         if(approach == 'Simple approach'):
-            st.markdown(f"# Simple approach")
+            st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+            st.subheader("Simple Approach")
             st.write(
                 """
                 Upload a file with **Contact ID, Contact Job Title, Contact CreatedDate** at a minimum.
@@ -123,7 +123,10 @@ def contacts_import(approach):
 
                                 
         if(approach == 'Advanced approach'):
-            st.markdown(f"# Advanced approach")
+            
+            st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+            st.subheader("Advanced Approach")
+
             st.write(
                 """
                 Upload a file with **Contact ID, Contact Job Title, Contact CreatedDate** 
@@ -303,9 +306,8 @@ def contacts_import(approach):
 page_names_to_funcs = {
     "—": intro,
     "Simple approach": contacts_import,
-    "Advanced approach": contacts_import
+    #"Advanced approach": contacts_import
 }
 
 app_name = st.sidebar.selectbox("Choose a function", page_names_to_funcs.keys())
 page_names_to_funcs[app_name](app_name)                                    
-
