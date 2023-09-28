@@ -59,7 +59,7 @@ def contacts_import(approach):
 
         #@st.cache
         def file_import(file, title_field):
-            st.session_state.clicked = False
+            #st.session_state.clicked = False
             buyer_persona = perlib.Buyer_Persona()
             buyer_persona.csv_ingest(file, title_field)
             return buyer_persona
