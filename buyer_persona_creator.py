@@ -19,6 +19,7 @@ st.set_page_config(layout="wide")
 def intro(approach):
 
     st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+    st.divider()
     st.sidebar.success("Select approach above.")
 
     st.markdown(
@@ -65,6 +66,7 @@ def contacts_import(approach):
 
         if(approach == 'Simple approach'):
             st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+            st.divider()
             st.subheader("Simple Approach")
             st.write(
                 """
