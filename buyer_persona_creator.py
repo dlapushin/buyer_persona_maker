@@ -8,17 +8,31 @@ import streamlit.components.v1 as components
 from pivottablejs import pivot_ui
 from datetime import datetime   
 
+import streamlit as st
+import pandas as pd
+from io import StringIO
+from urllib.error import URLError
+import datetime
+
 with open('title_classifier_serial', 'rb') as f:
     classifier = pickle.load(f)
 
 with open('vectorizer_serial', 'rb') as f:
     vectorizer = pickle.load(f)
 
+df_res_synonyms = pd.DataFrame.from_dict(perlib.dict_res_synonyms, orient='index', columns=['res']).sort_values(by='res')
+df_res_synonyms.reset_index(inplace=True)
+df_res_synonyms.columns = ['Token', 'Mapped to RES']
+
+df_fun_synonyms = pd.DataFrame.from_dict(perlib.dict_fun_synonyms, orient='index', columns=['fun']).sort_values(by='fun')
+df_fun_synonyms.reset_index(inplace=True)
+df_fun_synonyms.columns = ['Token', 'Mapped to FUN']
+
 st.set_page_config(layout="wide")
 
 def intro(approach):
 
-    st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+    st.header('Buyer Persona Creation Tools for :blue[Sales and Marketing]')
     st.divider()
     st.sidebar.success("Select approach above.")
 
@@ -33,11 +47,6 @@ def intro(approach):
 
 def contacts_import(approach):
 
-    import streamlit as st
-    import pandas as pd
-    from io import StringIO
-    from urllib.error import URLError
-    import datetime
 
     res_fun_topN = None
     #st.session_state.clicked = False
@@ -65,7 +74,7 @@ def contacts_import(approach):
             return buyer_persona
 
         if(approach == 'Simple approach'):
-            st.header('A Buyer Persona Toolkit for :blue[Sales and Marketing]')
+            st.header('Buyer Persona Creation Tools for :blue[Sales and Marketing]')
             st.divider()
             st.subheader("Simple Approach")
             st.write(
@@ -224,6 +233,9 @@ def contacts_import(approach):
                                          iswon = option_oppty_iswon)
 
             buyer_persona.pos_sorter()
+
+            ### DISPLAY TOP TOKENS FOR RES AND FUN
+
             st.write('### Top {0} RES and FUN tokens: '.format(int(res_fun_topN)))
 
             ## CODE TO DISPLAY TOP RES AND FUN ARRAYS IN 2 COLUMNS
@@ -243,60 +255,83 @@ def contacts_import(approach):
 
             st.session_state['buyer_persona'] = buyer_persona
 
-            match_choice = st.radio("Choose RES-FUN matching approach using above table",
-                options=['Top RES x Top FUN', 
-                         'Top RES x All FUN', 
-                         'All RES x Top FUN'],
-                )
+            st.divider()
+            
+            pivot_tab, data_tab = st.tabs(["📈 Heatmap", "🗃 Mappings"])
 
-            st.write("Current choice: ", match_choice)
+            with pivot_tab:
 
-            ## DATE FILTER DEFINITIONS
-            min_dt = pd.to_datetime(date_range_filter[0], utc=True)
-            max_dt = pd.to_datetime(date_range_filter[1], utc=True)
-            filter_create_date = (buyer_persona.df[option_contact_createdate].between(min_dt,max_dt))
+                res_fun_choice, coverage_metric = st.columns(2)
 
-            ## FILTER DEFINITIONS
+                with res_fun_choice:
+                    match_choice = st.radio("Choose RES-FUN matching approach using above table",
+                        options=['Top RES x Top FUN', 
+                                 'Top RES x All FUN', 
+                                 'All RES x Top FUN'],
+                        )
 
-            filter_res = (buyer_persona.df['RES_flat'].isin(top_res_tokens))
-            filter_fun = (buyer_persona.df['FUN_flat'].isin(top_fun_tokens))
-                            
-            if(match_choice == 'Top RES x Top FUN'):
 
-                pivot_df = buyer_persona.df[filter_res & filter_fun & filter_create_date]
-                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count()
-                pivot_df_agg.reset_index(inplace=True)
+                ## DATE FILTER DEFINITIONS
+                min_dt = pd.to_datetime(date_range_filter[0], utc=True)
+                max_dt = pd.to_datetime(date_range_filter[1], utc=True)
+                filter_create_date = (buyer_persona.df[option_contact_createdate].between(min_dt,max_dt))
 
-            elif(match_choice == 'Top RES x All FUN'):
+                ## FILTER DEFINITIONS
 
-                pivot_df = buyer_persona.df[filter_res & filter_create_date]
-                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
-                pivot_df_agg.reset_index(inplace=True)
+                filter_res = (buyer_persona.df['RES_flat'].isin(top_res_tokens))
+                filter_fun = (buyer_persona.df['FUN_flat'].isin(top_fun_tokens))
+                                
+                if(match_choice == 'Top RES x Top FUN'):
 
-            elif(match_choice == 'All RES x Top FUN'):
+                    pivot_df = buyer_persona.df[filter_res & filter_fun & filter_create_date]
+                    pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count()
+                    pivot_df_agg.reset_index(inplace=True)
 
-                pivot_df = buyer_persona.df[filter_fun & filter_create_date]
-                pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
-                pivot_df_agg.reset_index(inplace=True)
+                elif(match_choice == 'Top RES x All FUN'):
 
-            if approach == 'Simple approach':
-                field_filter = ['RES_flat','FUN_flat']
-            elif approach == 'Advanced approach':
-                field_filter = ['RES_flat','FUN_flat','Won_Lost']
+                    pivot_df = buyer_persona.df[filter_res & filter_create_date]
+                    pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
+                    pivot_df_agg.reset_index(inplace=True)
 
-            t = pivot_ui(pivot_df[field_filter], 
-                        rows=['RES_flat'], 
-                        cols=['FUN_flat'],
-                        rendererName = 'Heatmap',
-                        rowOrder= "value_z_to_a", 
-                        colOrder= "value_z_to_a")
+                elif(match_choice == 'All RES x Top FUN'):
 
-            with open(t.src) as t:
-                
-                try:
-                    components.html(t.read(), width=1200, height=1200, scrolling=True)
-                except:
-                    st.write('Dataset aggregation too granular. Try reducing value for N')
+                    pivot_df = buyer_persona.df[filter_fun & filter_create_date]
+                    pivot_df_agg = pivot_df.groupby(['RES_flat','FUN_flat']).count().sort_values(by=option_contact_createdate, ascending=False)
+                    pivot_df_agg.reset_index(inplace=True)
+
+                if approach == 'Simple approach':
+                    field_filter = ['RES_flat','FUN_flat']
+                elif approach == 'Advanced approach':
+                    field_filter = ['RES_flat','FUN_flat','Won_Lost']
+
+                t = pivot_ui(pivot_df[field_filter], 
+                            rows=['RES_flat'], 
+                            cols=['FUN_flat'],
+                            rendererName = 'Heatmap',
+                            rowOrder= "value_z_to_a", 
+                            colOrder= "value_z_to_a")
+
+                total_contact_count = buyer_persona.df.shape[0]
+                total_persona_match = pivot_df.shape[0]
+
+                with coverage_metric:
+                    st.metric(label="Coverage rate (% of contacts mapped)", value=str(round(100*total_persona_match/total_contact_count))+'%')
+
+                with open(t.src) as t:
+                    
+                    try:
+                        components.html(t.read(), width=1200, height=500, scrolling=True)
+                    except:
+                        st.write('Dataset aggregation too granular. Try reducing value for N')
+            
+            with data_tab:
+
+                col_res_syn, col_fun_syn = st.columns(2)
+
+                with col_res_syn:
+                    st.dataframe(df_res_synonyms)
+                with col_fun_syn:
+                    st.dataframe(df_fun_synonyms)
 
 
         if uploaded_file:
@@ -315,3 +350,4 @@ page_names_to_funcs = {
 
 app_name = st.sidebar.selectbox("Choose a function", page_names_to_funcs.keys())
 page_names_to_funcs[app_name](app_name)                                    
+
