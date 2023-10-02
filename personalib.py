@@ -16,6 +16,7 @@ import re
 import streamlit.components.v1 as components
 from pivottablejs import pivot_ui
 
+
 with open('title_classifier_serial', 'rb') as f:
     classifier = pickle.load(f)
 
