@@ -6,4 +6,5 @@ IPython
 pivottablejs
 plotly
 scikit-learn
+pillow
 streamlit-aggrid
