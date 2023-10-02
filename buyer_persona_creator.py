@@ -81,7 +81,7 @@ def contacts_import(approach):
             st.subheader("Simple Approach")
             st.write(
                 """
-                Upload a file with **Contact ID, Contact Job Title, Contact CreatedDate** at a minimum.
+                Upload a file with **Contact Job Title, Contact CreatedDate, ContactID (optional)** at a minimum.
                 **No personal information (PII) is required**.
                 """
             )
