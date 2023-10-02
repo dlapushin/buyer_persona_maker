@@ -6,4 +6,4 @@ IPython
 pivottablejs
 plotly
 scikit-learn
-AgGrid
+st_aggrid
