@@ -1,15 +1,16 @@
 import streamlit as st
+from st_aggrid import AgGrid
 import personalib as perlib
 from stqdm import stqdm
+
 import pickle5 as pickle
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit.components.v1 as components
-from pivottablejs import pivot_ui
-from datetime import datetime   
 
-import streamlit as st
+from pivottablejs import pivot_ui
 import pandas as pd
+from datetime import datetime   
 from io import StringIO
 from urllib.error import URLError
 import datetime
@@ -49,7 +50,6 @@ def contacts_import(approach):
 
 
     res_fun_topN = None
-    #st.session_state.clicked = False
 
     uploaded_file = st.sidebar.file_uploader("Choose a file", 
                                         type=['csv','xlsx']
@@ -256,8 +256,11 @@ def contacts_import(approach):
             st.session_state['buyer_persona'] = buyer_persona
 
             st.divider()
-            
-            pivot_tab, data_tab = st.tabs(["📈 Heatmap", "🗃 Mappings"])
+            st.subheader('Persona Analysis')
+            st.write('**Most prevalent personas in upper left of Heatmap below**')
+            st.write('Tokens under **Mappings** tab have been mapped and consolidated for semantic consistency')
+
+            pivot_tab, mapping_tab = st.tabs(["📈 Heatmap", "🗃 Mappings"])
 
             with pivot_tab:
 
@@ -304,13 +307,16 @@ def contacts_import(approach):
                 elif approach == 'Advanced approach':
                     field_filter = ['RES_flat','FUN_flat','Won_Lost']
 
+
                 t = pivot_ui(pivot_df[field_filter], 
                             rows=['RES_flat'], 
                             cols=['FUN_flat'],
                             rendererName = 'Heatmap',
-                            rowOrder= "value_z_to_a", 
-                            colOrder= "value_z_to_a")
+                            rowOrder = 'value_z_to_a', 
+                            colOrder = 'value_z_to_a',
+                            )
 
+                
                 total_contact_count = buyer_persona.df.shape[0]
                 total_persona_match = pivot_df.shape[0]
 
@@ -320,11 +326,13 @@ def contacts_import(approach):
                 with open(t.src) as t:
                     
                     try:
-                        components.html(t.read(), width=1200, height=500, scrolling=True)
+                        components.html(t.read(), width=1200, height=400, scrolling=True)
+                        st.subheader('Underlying Records')
+                        AgGrid(pivot_df)
                     except:
                         st.write('Dataset aggregation too granular. Try reducing value for N')
             
-            with data_tab:
+            with mapping_tab:
 
                 col_res_syn, col_fun_syn = st.columns(2)
 
