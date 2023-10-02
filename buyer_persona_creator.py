@@ -34,6 +34,7 @@ st.set_page_config(layout="wide")
 def intro(approach):
 
     st.header('Buyer Persona Creation Tools for :blue[Sales and Marketing]')
+    st.write('Contact dlapushin@gmail.com for implementation consulting.')
     st.divider()
     st.sidebar.success("Select approach above.")
 
@@ -55,7 +56,6 @@ def contacts_import(approach):
                                         type=['csv','xlsx']
                                         )     
 
-
     def timestamp_str_to_datetime(ts_string):
 
         ts_date = datetime.datetime.strptime(ts_string[0:10], "%Y-%m-%d")
@@ -75,6 +75,8 @@ def contacts_import(approach):
 
         if(approach == 'Simple approach'):
             st.header('Buyer Persona Creation Tools for :blue[Sales and Marketing]')
+            st.write('Contact dlapushin@gmail.com for implementation consulting.')
+
             st.divider()
             st.subheader("Simple Approach")
             st.write(
@@ -358,3 +360,4 @@ page_names_to_funcs = {
 
 app_name = st.sidebar.selectbox("Choose a function", page_names_to_funcs.keys())
 page_names_to_funcs[app_name](app_name)                                    
+
