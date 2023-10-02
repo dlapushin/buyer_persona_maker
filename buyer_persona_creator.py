@@ -358,4 +358,3 @@ page_names_to_funcs = {
 
 app_name = st.sidebar.selectbox("Choose a function", page_names_to_funcs.keys())
 page_names_to_funcs[app_name](app_name)                                    
-
